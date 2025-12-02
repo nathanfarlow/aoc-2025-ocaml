@@ -1,11 +1,9 @@
 open! Core
 open! Common
 
-let num_positions = 100
-
 let part1 puzzle =
   List.fold puzzle ~init:(50, 0) ~f:(fun (position, num_zeros) amount ->
-    let position = (position + amount) % num_positions in
+    let position = (position + amount) % 100 in
     let num_zeros = if position = 0 then num_zeros + 1 else num_zeros in
     position, num_zeros)
   |> snd
