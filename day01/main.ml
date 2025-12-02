@@ -3,9 +3,7 @@ open! Common
 
 let part1 =
   List.fold ~init:(50, 0) ~f:(fun (position, num_zeros) amount ->
-    let position = (position + amount) % 100 in
-    let num_zeros = if position = 0 then num_zeros + 1 else num_zeros in
-    position, num_zeros)
+    (position + amount) % 100, if position = 0 then num_zeros + 1 else num_zeros)
   >> snd
   >> print_int
 ;;
