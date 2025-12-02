@@ -38,7 +38,7 @@ end
     {v
        for i in range(len(l)):
         for j in range(i + 1, len(l)):
-          yield i, l[j:]
+          yield l[i], l[j:]
     v}
 *)
 val triangular : 'a list -> ('a * 'a list) Sequence.t
