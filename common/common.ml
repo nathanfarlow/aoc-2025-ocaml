@@ -13,6 +13,7 @@ include Syntax
 
 module Angstrom = struct
   include Angstrom
+  include Angstrom.Let_syntax
 
   let space =
     skip_while (function
@@ -21,7 +22,6 @@ module Angstrom = struct
   ;;
 
   let integer =
-    let open Angstrom.Let_syntax in
     let%bind mul = option 1 (char '-' >>| fun _ -> -1) in
     take_while1 Char.is_digit >>| Int.of_string >>| ( * ) mul
   ;;

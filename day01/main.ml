@@ -20,7 +20,6 @@ let part2 puzzle =
 
 let parse =
   let open Angstrom in
-  let open Angstrom.Let_syntax in
   let amount =
     let%bind direction = char 'L' *> return Int.neg <|> char 'R' *> return Fn.id in
     integer >>| direction

@@ -12,7 +12,8 @@ end
 include module type of Syntax
 
 module Angstrom : sig
-  include module type of Angstrom
+  include module type of Angstrom with type 'a t = 'a Angstrom.t
+  include module type of Angstrom.Let_syntax
 
   (** Space or tab *)
   val space : unit t
