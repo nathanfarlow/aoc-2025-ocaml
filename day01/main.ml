@@ -1,19 +1,19 @@
 open! Core
 open! Common
 
-let part1 puzzle =
-  List.fold puzzle ~init:(50, 0) ~f:(fun (position, num_zeros) amount ->
+let part1 =
+  List.fold ~init:(50, 0) ~f:(fun (position, num_zeros) amount ->
     let position = (position + amount) % 100 in
     let num_zeros = if position = 0 then num_zeros + 1 else num_zeros in
     position, num_zeros)
-  |> snd
-  |> print_int
+  >> snd
+  >> print_int
 ;;
 
-let part2 puzzle =
-  List.concat_map puzzle ~f:(fun amount ->
+let part2 =
+  List.concat_map ~f:(fun amount ->
     List.init (abs amount) ~f:(fun _ -> amount / abs amount))
-  |> part1
+  >> part1
 ;;
 
 let parse =
