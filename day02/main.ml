@@ -1,9 +1,9 @@
 open! Core
 open! Common
 
-let is_invalid s size =
+let is_invalid s length =
   String.to_list s
-  |> List.chunks_of ~length:size
+  |> List.chunks_of ~length
   |> List.all_equal ~equal:[%equal: char list]
   |> Option.is_some
 ;;
