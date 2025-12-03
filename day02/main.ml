@@ -5,20 +5,20 @@ let is_invalid s size =
   String.to_list s
   |> List.chunks_of ~length:size
   |> List.all_equal ~equal:[%equal: char list]
-  |> Option.exists ~f:(fun _ -> size <= String.length s / 2)
+  |> Option.is_some
 ;;
 
-let print = sum ~f:Int.of_string >> print_int
+let print_sum = sum ~f:Int.of_string >> print_int
 
 let part1 =
-  List.filter ~f:(fun i -> String.length i % 2 = 0 && is_invalid i (String.length i / 2))
-  >> print
+  List.filter ~f:(fun i -> is_invalid i (String.length i // 2 |> Float.iround_up_exn))
+  >> print_sum
 ;;
 
 let part2 =
   List.filter ~f:(fun i ->
-    List.range 1 (String.length i) |> List.exists ~f:(is_invalid i))
-  >> print
+    List.range 1 ((String.length i / 2) + 1) |> List.exists ~f:(is_invalid i))
+  >> print_sum
 ;;
 
 let parse s =
