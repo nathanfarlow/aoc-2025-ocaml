@@ -17,7 +17,7 @@ let part1 =
 
 let part2 =
   List.filter ~f:(fun i ->
-    List.range 1 ((String.length i / 2) + 1) |> List.exists ~f:(is_invalid i))
+    List.range 1 (String.length i) |> List.exists ~f:(is_invalid i))
   >> print_sum
 ;;
 
