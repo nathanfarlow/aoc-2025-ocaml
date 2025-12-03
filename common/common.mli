@@ -30,8 +30,8 @@ module Angstrom : sig
   val ws : unit t
 
   val many_lines_of : 'a t -> 'a list t
-  val exec_exn : ?consume:Consume.t -> 'a t -> string -> 'a
-  val exec_opt : ?consume:Consume.t -> 'a t -> string -> 'a option
+  val exec_exn : ?trim:bool -> ?consume:Consume.t -> 'a t -> string -> 'a
+  val exec_opt : ?trim:bool -> ?consume:Consume.t -> 'a t -> string -> 'a option
 end
 
 (** Equivalent to

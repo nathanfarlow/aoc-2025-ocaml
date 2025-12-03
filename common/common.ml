@@ -29,12 +29,13 @@ module Angstrom = struct
   let ws = skip_while Char.is_whitespace
   let many_lines_of p = many (p <* (char '\n' *> return () <|> return ()))
 
-  let exec_exn ?(consume = Angstrom.Consume.All) parser s =
+  let exec_exn ?(trim = true) ?(consume = Angstrom.Consume.All) parser s =
+    let s = if trim then String.strip s else s in
     parse_string ~consume parser s |> Result.ok_or_failwith
   ;;
 
-  let exec_opt ?consume parser s =
-    match exec_exn ?consume parser s with
+  let exec_opt ?trim ?consume parser s =
+    match exec_exn ?trim ?consume parser s with
     | x -> Some x
     | exception _ -> None
   ;;
