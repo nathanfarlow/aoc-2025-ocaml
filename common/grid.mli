@@ -13,6 +13,7 @@ val get_opt : 'a t -> Point.t -> 'a option
 val set : 'a t -> Point.t -> 'a -> unit
 val neighbors4 : 'a t -> Point.t -> (Point.t * 'a) list
 val neighbors8 : 'a t -> Point.t -> (Point.t * 'a) list
+val count : f:(Point.t -> 'a -> bool) -> 'a t -> int
 val find_all : f:(Point.t -> 'a -> bool) -> 'a t -> Point.t list
 val find_opt : f:(Point.t -> 'a -> bool) -> 'a t -> Point.t option
 val find_exn : f:(Point.t -> 'a -> bool) -> 'a t -> Point.t

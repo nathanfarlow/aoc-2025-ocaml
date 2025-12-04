@@ -37,6 +37,8 @@ let find_all ~f grid =
   !locs
 ;;
 
+let count ~f grid = find_all ~f grid |> List.length
+
 let find_opt ~f grid =
   Array.find_mapi grid ~f:(fun i row ->
     Array.find_mapi row ~f:(fun j cell -> Option.some_if (f (i, j) cell) (i, j)))

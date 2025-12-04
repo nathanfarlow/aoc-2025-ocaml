@@ -6,10 +6,10 @@ let is_accessible grid pos cell =
   cell && num_neighbors < 4
 ;;
 
-let part1 grid = Grid.find_all grid ~f:(is_accessible grid) |> List.length |> print_int
+let part1 grid = Grid.count grid ~f:(is_accessible grid) |> print_int
 
 let part2 grid =
-  let count = Grid.find_all ~f:(fun _ c -> c) >> List.length in
+  let count = Grid.count ~f:(fun _ c -> c) in
   let initial_count = count grid in
   let rec delete_accessible () =
     Grid.find_opt grid ~f:(is_accessible grid)
