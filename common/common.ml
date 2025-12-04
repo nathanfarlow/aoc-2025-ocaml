@@ -27,7 +27,7 @@ module Angstrom = struct
   ;;
 
   let ws = skip_while Char.is_whitespace
-  let many_lines_of p = many (p <* (char '\n' *> return () <|> return ()))
+  let many_lines_of p = sep_by end_of_line p
 
   let exec_exn ?(trim = true) ?(consume = Angstrom.Consume.All) parser s =
     let s = if trim then String.strip s else s in
