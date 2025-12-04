@@ -1,20 +1,20 @@
 open! Core
 open! Common
 
-let rec choose k xs =
-  match k with
+let rec largest_joltage num_digits all_digits =
+  match num_digits with
   | 0 -> 0
   | _ ->
     let max_digit =
-      List.take xs (List.length xs - k + 1)
+      List.take all_digits (List.length all_digits - num_digits + 1)
       |> List.max_elt ~compare:Int.compare
       |> Option.value_exn
     in
-    let remaining = List.drop_while xs ~f:(( <> ) max_digit) |> List.tl_exn in
-    (Int.pow 10 (k - 1) * max_digit) + choose (k - 1) remaining
+    let remaining = List.drop_while all_digits ~f:(( <> ) max_digit) |> List.tl_exn in
+    (Int.pow 10 (num_digits - 1) * max_digit) + largest_joltage (num_digits - 1) remaining
 ;;
 
-let part k = sum ~f:(choose k) >> print_int
+let part k = sum ~f:(largest_joltage k) >> print_int
 
 let parse =
   let open Angstrom in
