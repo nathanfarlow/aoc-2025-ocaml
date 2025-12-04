@@ -2,6 +2,7 @@ open! Core
 
 type 'a t = 'a array array [@@deriving sexp_of]
 
+let create xs = List.map xs ~f:Array.of_list |> Array.of_list
 let height = Array.length
 let width t = Array.length t.(0)
 let get t (i, j) = t.(i).(j)
@@ -9,8 +10,22 @@ let in_bounds t (i, j) = i >= 0 && i < height t && j >= 0 && j < width t
 let get_opt t (i, j) = if in_bounds t (i, j) then Some t.(i).(j) else None
 let set t (i, j) v = t.(i).(j) <- v
 
-let neighbors grid (i, j) =
+let neighbors4 grid (i, j) =
   [ i - 1, j; i + 1, j; i, j - 1; i, j + 1 ]
+  |> List.filter_map ~f:(fun pos ->
+    get_opt grid pos |> Option.map ~f:(fun val_ -> pos, val_))
+;;
+
+let neighbors8 grid (i, j) =
+  [ i - 1, j - 1
+  ; i - 1, j
+  ; i - 1, j + 1
+  ; i, j - 1
+  ; i, j + 1
+  ; i + 1, j - 1
+  ; i + 1, j
+  ; i + 1, j + 1
+  ]
   |> List.filter_map ~f:(fun pos ->
     get_opt grid pos |> Option.map ~f:(fun val_ -> pos, val_))
 ;;
