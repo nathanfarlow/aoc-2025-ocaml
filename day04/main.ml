@@ -9,16 +9,16 @@ let is_accessible grid pos cell =
 let part1 grid = Grid.count grid ~f:(is_accessible grid) |> print_int
 
 let part2 grid =
-  let count = Grid.count ~f:(fun _ c -> c) in
-  let initial_count = count grid in
+  let count = ref 0 in
   let rec delete_accessible () =
     Grid.find_opt grid ~f:(is_accessible grid)
     |> Option.iter ~f:(fun (i, j) ->
+      incr count;
       grid.(i).(j) <- false;
       delete_accessible ())
   in
   delete_accessible ();
-  print_int (initial_count - count grid)
+  print_int !count
 ;;
 
 let parse =
