@@ -7,8 +7,19 @@ let find_accessible grid =
     cell && num_neighbors < 4)
 ;;
 
-let part1 (grid : bool Grid.t) = find_accessible grid |> List.length |> print_int
-let part2 _ = failwith ""
+let part1 = find_accessible >> List.length >> print_int
+
+let part2 grid =
+  let count = Grid.find_all ~f:(fun _ c -> c) >> List.length in
+  let rec delete_some () =
+    let old = Grid.copy grid in
+    find_accessible grid |> List.iter ~f:(fun (i, j) -> grid.(i).(j) <- false);
+    if not @@ Grid.equal Bool.equal old grid then delete_some ()
+  in
+  let initial_count = count grid in
+  delete_some ();
+  print_int (initial_count - count grid)
+;;
 
 let parse =
   let open Angstrom in
