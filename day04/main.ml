@@ -1,23 +1,23 @@
 open! Core
 open! Common
 
-let find_accessible grid =
-  Grid.find_all grid ~f:(fun (i, j) cell ->
-    let num_neighbors = Grid.neighbors8 grid (i, j) |> List.count ~f:snd in
-    cell && num_neighbors < 4)
+let is_accessible grid pos cell =
+  let num_neighbors = Grid.neighbors8 grid pos |> List.count ~f:snd in
+  cell && num_neighbors < 4
 ;;
 
-let part1 = find_accessible >> List.length >> print_int
+let part1 grid = Grid.find_all grid ~f:(is_accessible grid) |> List.length |> print_int
 
 let part2 grid =
   let count = Grid.find_all ~f:(fun _ c -> c) >> List.length in
-  let rec delete_some () =
-    let old = Grid.copy grid in
-    find_accessible grid |> List.iter ~f:(fun (i, j) -> grid.(i).(j) <- false);
-    if not @@ Grid.equal Bool.equal old grid then delete_some ()
-  in
   let initial_count = count grid in
-  delete_some ();
+  let rec delete_accessible () =
+    Grid.find_opt grid ~f:(is_accessible grid)
+    |> Option.iter ~f:(fun (i, j) ->
+      grid.(i).(j) <- false;
+      delete_accessible ())
+  in
+  delete_accessible ();
   print_int (initial_count - count grid)
 ;;
 

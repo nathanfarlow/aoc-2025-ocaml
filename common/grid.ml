@@ -37,7 +37,11 @@ let find_all ~f grid =
   !locs
 ;;
 
-let find_opt ~f grid = find_all ~f grid |> List.hd
+let find_opt ~f grid =
+  Array.find_mapi grid ~f:(fun i row ->
+    Array.find_mapi row ~f:(fun j cell -> Option.some_if (f (i, j) cell) (i, j)))
+;;
+
 let find_exn ~f grid = find_opt ~f grid |> Option.value_exn
 let copy grid = Array.map grid ~f:Array.copy |> Array.copy
 let equal equal a b = Array.equal (Array.equal equal) a b
