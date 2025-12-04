@@ -30,13 +30,14 @@ let neighbors8 grid (i, j) =
     get_opt grid pos |> Option.map ~f:(fun val_ -> pos, val_))
 ;;
 
-let find_all ~equal grid val_ =
+let find_all ~f grid =
   let locs = ref [] in
   Array.iteri grid ~f:(fun i ->
-    Array.iteri ~f:(fun j other -> if equal other val_ then locs := (i, j) :: !locs));
+    Array.iteri ~f:(fun j cell -> if f (i, j) cell then locs := (i, j) :: !locs));
   !locs
 ;;
 
-let find_opt ~equal grid val_ = find_all ~equal grid val_ |> List.hd
-let find_exn ~equal grid val_ = find_opt ~equal grid val_ |> Option.value_exn
+let find_opt ~f grid = find_all ~f grid |> List.hd
+let find_exn ~f grid = find_opt ~f grid |> Option.value_exn
 let copy grid = Array.map grid ~f:Array.copy |> Array.copy
+let equal equal a b = Array.equal (Array.equal equal) a b

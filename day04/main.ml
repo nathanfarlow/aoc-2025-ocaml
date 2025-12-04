@@ -1,16 +1,13 @@
 open! Core
 open! Common
 
-let part1 (grid : bool Grid.t) =
-  List.range 0 (Grid.height grid)
-  |> List.cartesian_product (List.range 0 (Grid.width grid))
-  |> sum ~f:(fun (i, j) ->
-    let neighbors = Grid.neighbors8 grid (i, j) in
-    let num_neighbors = List.count neighbors ~f:snd in
-    if Grid.get grid (i, j) && num_neighbors < 4 then 1 else 0)
-  |> print_int
+let find_accessible grid =
+  Grid.find_all grid ~f:(fun (i, j) cell ->
+    let num_neighbors = Grid.neighbors8 grid (i, j) |> List.count ~f:snd in
+    cell && num_neighbors < 4)
 ;;
 
+let part1 (grid : bool Grid.t) = find_accessible grid |> List.length |> print_int
 let part2 _ = failwith ""
 
 let parse =
