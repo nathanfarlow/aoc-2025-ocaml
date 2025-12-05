@@ -34,14 +34,14 @@ let find_all ~f grid =
   let locs = ref [] in
   Array.iteri grid ~f:(fun i ->
     Array.iteri ~f:(fun j cell -> if f (i, j) cell then locs := (i, j) :: !locs));
-  !locs
+  List.rev !locs
 ;;
 
 let count ~f grid = find_all ~f grid |> List.length
 
 let find_opt ~f grid =
-  Array.find_mapi grid ~f:(fun i row ->
-    Array.find_mapi row ~f:(fun j cell -> Option.some_if (f (i, j) cell) (i, j)))
+  Array.find_mapi grid ~f:(fun i ->
+    Array.find_mapi ~f:(fun j cell -> Option.some_if (f (i, j) cell) (i, j)))
 ;;
 
 let find_exn ~f grid = find_opt ~f grid |> Option.value_exn
