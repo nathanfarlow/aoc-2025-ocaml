@@ -3,22 +3,21 @@ open! Common
 
 let num_visits grid =
   Memo.recursive ~hashable:Point.hashable (fun num_visits (i, j) ->
-    let rec loop i total =
+    let total = ref 0 in
+    let rec loop i =
       match Grid.get_opt grid (i, j) with
-      | None | Some '^' -> total
-      | Some 'S' -> total + 1
+      | None | Some '^' -> ()
+      | Some 'S' -> incr total
       | _ ->
-        let total =
-          total
-          + ([ i, j - 1; i, j + 1 ]
-             |> sum ~f:(fun pos ->
-               match Grid.get_opt grid pos with
-               | Some '^' -> num_visits pos
-               | _ -> 0))
-        in
-        loop (i - 1) total
+        [ i, j - 1; i, j + 1 ]
+        |> List.iter ~f:(fun pos ->
+          match Grid.get_opt grid pos with
+          | Some '^' -> total := !total + num_visits pos
+          | _ -> ());
+        loop (i - 1)
     in
-    loop (i - 1) 0)
+    loop (i - 1);
+    !total)
 ;;
 
 let part1 grid =
