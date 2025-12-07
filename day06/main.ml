@@ -11,7 +11,7 @@ let part1 (rows, ops) =
 
 let op = char '*' *> return ( * ) <|> char '+' *> return ( + )
 
-let parse_part1 =
+let parse1 =
   let ints = sep_by1 space integer in
   both (many_lines_of ints) (sep_by space op) |> exec_exn
 ;;
@@ -35,7 +35,7 @@ let part2 (rows, (ops, nums)) =
   |> print_int
 ;;
 
-let parse_part2 =
+let parse2 =
   let open Angstrom in
   let row = many1 Char.(satisfy is_digit <|> char ' ' >>| to_string >>| String.strip) in
   let ops = both op (many (char ' ') >>| List.length >>| ( + ) 1) in
@@ -44,8 +44,5 @@ let parse_part2 =
 ;;
 
 let () =
-  run_with_input_file
-    ~part1:(parse_part1 >> part1)
-    ~part2:(parse_part2 >> part2)
-    ~parse:Fn.id
+  run_with_input_file ~part1:(parse1 >> part1) ~part2:(parse2 >> part2) ~parse:Fn.id
 ;;
