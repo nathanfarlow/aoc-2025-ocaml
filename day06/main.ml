@@ -16,16 +16,16 @@ let parse1 =
   both (many_lines_of ints) (sep_by space op) |> exec_exn
 ;;
 
-let rec split nums xs =
-  match nums with
+let rec split sizes xs =
+  match sizes with
   | [] -> []
-  | n :: rest ->
-    let fst, snd = List.split_n xs n in
-    fst :: split rest snd
+  | size :: sizes ->
+    let fst, snd = List.split_n xs size in
+    fst :: split sizes snd
 ;;
 
-let part2 (rows, (ops, nums)) =
-  List.map rows ~f:(split nums)
+let part2 (rows, (ops, sizes)) =
+  List.map rows ~f:(split sizes)
   |> List.transpose_exn
   |> List.map ~f:List.transpose_exn
   |> List.map ~f:(List.filter_map ~f:(String.concat >> Int.of_string_opt))
