@@ -2,8 +2,8 @@ open! Core
 open! Common
 open Angstrom
 
-let zip_and_print ops xs =
-  List.zip_exn ops xs |> sum ~f:(fun (f, ints) -> List.reduce_exn ints ~f) |> print_int
+let zip_and_print ops =
+  List.zip_exn ops >> sum ~f:(fun (f, ints) -> List.reduce_exn ints ~f) >> print_int
 ;;
 
 let part1 (rows, ops) = List.transpose_exn rows |> zip_and_print ops
