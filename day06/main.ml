@@ -2,13 +2,11 @@ open! Core
 open! Common
 open Angstrom
 
-let part1 (rows, ops) =
-  List.transpose_exn rows
-  |> List.zip_exn ops
-  |> sum ~f:(fun (f, ints) -> List.reduce_exn ints ~f)
-  |> print_int
+let zip_and_print ops xs =
+  List.zip_exn ops xs |> sum ~f:(fun (f, ints) -> List.reduce_exn ints ~f) |> print_int
 ;;
 
+let part1 (rows, ops) = List.transpose_exn rows |> zip_and_print ops
 let op = char '*' *> return ( * ) <|> char '+' *> return ( + )
 
 let parse1 =
@@ -29,9 +27,7 @@ let part2 (rows, (ops, sizes)) =
   |> List.transpose_exn
   |> List.map ~f:List.transpose_exn
   |> List.map ~f:(List.filter_map ~f:(String.concat >> Int.of_string_opt))
-  |> List.zip_exn ops
-  |> sum ~f:(fun (f, ints) -> List.reduce_exn ints ~f)
-  |> print_int
+  |> zip_and_print ops
 ;;
 
 let parse2 =
