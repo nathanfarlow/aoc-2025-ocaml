@@ -28,8 +28,7 @@ let part2 (rows, (ops, nums)) =
   List.map rows ~f:(split nums)
   |> List.transpose_exn
   |> List.map ~f:List.transpose_exn
-  |> List.map ~f:(fun column ->
-    List.filter_map column ~f:(String.concat >> Int.of_string_opt))
+  |> List.map ~f:(List.filter_map ~f:(String.concat >> Int.of_string_opt))
   |> List.zip_exn ops
   |> sum ~f:(fun (f, ints) -> List.reduce_exn ints ~f)
   |> print_int
