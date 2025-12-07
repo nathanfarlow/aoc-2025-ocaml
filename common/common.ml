@@ -26,8 +26,12 @@ module Angstrom = struct
     take_while1 Char.is_digit >>| Int.of_string >>| ( * ) mul
   ;;
 
-  let ws = skip_while Char.is_whitespace
-  let many_lines_of p = sep_by end_of_line p
+  let space_or_line = skip_while Char.is_whitespace
+
+  let many_lines_of ?(trim = true) p =
+    let p = if trim then space *> p else p in
+    sep_by end_of_line p <* space_or_line
+  ;;
 
   let exec_exn ?(trim = true) ?(consume = Angstrom.Consume.All) parser s =
     let s = if trim then String.strip s else s in

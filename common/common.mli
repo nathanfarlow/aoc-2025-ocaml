@@ -27,9 +27,9 @@ module Angstrom : sig
   val skip_till : 'a t -> 'a t
 
   (** Skips [Char.is_whitespace] *)
-  val ws : unit t
+  val space_or_line : unit t
 
-  val many_lines_of : 'a t -> 'a list t
+  val many_lines_of : ?trim:bool -> 'a t -> 'a list t
   val exec_exn : ?trim:bool -> ?consume:Consume.t -> 'a t -> string -> 'a
   val exec_opt : ?trim:bool -> ?consume:Consume.t -> 'a t -> string -> 'a option
 end
