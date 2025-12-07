@@ -34,9 +34,5 @@ let part2 grid =
   |> print_int
 ;;
 
-let parse =
-  let open Angstrom in
-  many_lines_of (many (not_char '\n')) >>| Grid.create |> exec_exn
-;;
-
+let parse = String.split_lines >> List.map ~f:String.to_list >> Grid.create
 let () = run_with_input_file ~part1 ~part2 ~parse
