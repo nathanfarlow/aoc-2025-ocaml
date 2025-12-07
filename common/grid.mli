@@ -11,6 +11,7 @@ val in_bounds : 'a t -> Point.t -> bool
 val get : 'a t -> Point.t -> 'a
 val get_opt : 'a t -> Point.t -> 'a option
 val set : 'a t -> Point.t -> 'a -> unit
+val set_opt : 'a t -> Point.t -> 'a -> unit
 val neighbors4 : 'a t -> Point.t -> (Point.t * 'a) list
 val neighbors8 : 'a t -> Point.t -> (Point.t * 'a) list
 val count : f:(Point.t -> 'a -> bool) -> 'a t -> int

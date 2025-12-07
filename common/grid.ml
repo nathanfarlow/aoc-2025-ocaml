@@ -9,6 +9,7 @@ let get t (i, j) = t.(i).(j)
 let in_bounds t (i, j) = i >= 0 && i < height t && j >= 0 && j < width t
 let get_opt t (i, j) = if in_bounds t (i, j) then Some t.(i).(j) else None
 let set t (i, j) v = t.(i).(j) <- v
+let set_opt t (i, j) v = if in_bounds t (i, j) then t.(i).(j) <- v
 
 let neighbors4 grid (i, j) =
   [ i - 1, j; i + 1, j; i, j - 1; i, j + 1 ]
