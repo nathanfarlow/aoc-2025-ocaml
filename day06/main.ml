@@ -45,15 +45,15 @@ let rec split nums xs =
     fst :: split rest snd
 ;;
 
-let part2 ((p : string list list), (_ops, nums)) =
-  let rows = List.map p ~f:(split nums) in
-  let _cols = List.transpose_exn rows in
-  let _hm = List.map _cols ~f:List.transpose_exn in
-  let _int =
-    List.map _hm ~f:(fun column ->
-      List.filter_map column ~f:(fun node -> String.concat node |> Int.of_string_opt))
-  in
-  List.zip_exn _ops _int |> sum ~f:(fun (f, ints) -> List.reduce_exn ints ~f) |> print_int
+let part2 (rows, (ops, nums)) =
+  List.map rows ~f:(split nums)
+  |> List.transpose_exn
+  |> List.map ~f:List.transpose_exn
+  |> List.map ~f:(fun column ->
+    List.filter_map column ~f:(fun node -> String.concat node |> Int.of_string_opt))
+  |> List.zip_exn ops
+  |> sum ~f:(fun (f, ints) -> List.reduce_exn ints ~f)
+  |> print_int
 ;;
 
 let part2 = parse_part2 >> part2
