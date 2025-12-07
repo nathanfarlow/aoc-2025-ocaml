@@ -69,6 +69,7 @@ let part2 grid =
     | Split -> true
     | _ -> false)
   |> sum ~f:calculate
+  |> ( + ) 1
   |> print_int
 ;;
 
