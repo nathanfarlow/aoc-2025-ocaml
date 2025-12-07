@@ -1,36 +1,37 @@
 open! Core
 open! Common
 
-let calculate grid =
-  Memo.recursive ~hashable:Point.hashable (fun calculate (i, j) ->
-    let c = ref 0 in
-    let rec loop i =
+let num_visits grid =
+  Memo.recursive ~hashable:Point.hashable (fun num_visits (i, j) ->
+    let rec loop i total =
       match Grid.get_opt grid (i, j) with
-      | Some 'S' -> incr c
-      | None | Some '^' -> ()
+      | None | Some '^' -> total
+      | Some 'S' -> total + 1
       | _ ->
-        [ i, j - 1; i, j + 1 ]
-        |> List.iter ~f:(fun pos ->
-          match Grid.get_opt grid pos with
-          | Some '^' -> c := !c + calculate pos
-          | _ -> ());
-        loop (i - 1)
+        let total =
+          total
+          + ([ i, j - 1; i, j + 1 ]
+             |> sum ~f:(fun pos ->
+               match Grid.get_opt grid pos with
+               | Some '^' -> num_visits pos
+               | _ -> 0))
+        in
+        loop (i - 1) total
     in
-    loop (i - 1);
-    !c)
-;;
-
-let part2 grid =
-  Grid.find_all grid ~f:(fun _ -> Char.equal '^')
-  |> sum ~f:(calculate grid)
-  |> ( + ) 1
-  |> print_int
+    loop (i - 1) 0)
 ;;
 
 let part1 grid =
   Grid.find_all grid ~f:(fun _ -> Char.equal '^')
-  |> List.map ~f:(calculate grid)
+  |> List.map ~f:(num_visits grid)
   |> List.count ~f:(( < ) 0)
+  |> print_int
+;;
+
+let part2 grid =
+  Grid.find_all grid ~f:(fun _ -> Char.equal '^')
+  |> sum ~f:(num_visits grid)
+  |> ( + ) 1
   |> print_int
 ;;
 
