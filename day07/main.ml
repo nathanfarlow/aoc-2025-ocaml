@@ -21,17 +21,15 @@ let calculate grid =
 ;;
 
 let part2 grid =
-  let calculate = calculate grid in
   Grid.find_all grid ~f:(fun _ -> Char.equal '^')
-  |> sum ~f:calculate
+  |> sum ~f:(calculate grid)
   |> ( + ) 1
   |> print_int
 ;;
 
 let part1 grid =
-  let calculate = calculate grid in
   Grid.find_all grid ~f:(fun _ -> Char.equal '^')
-  |> List.map ~f:calculate
+  |> List.map ~f:(calculate grid)
   |> List.count ~f:(( < ) 0)
   |> print_int
 ;;
