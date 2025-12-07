@@ -17,7 +17,7 @@ let part2 (ranges, _) =
        then (c_start, max c_end r_end), all
        else (r_start, r_end), (c_start, c_end) :: all)
      |> Tuple2.uncurry List.cons)
-  |> sum ~f:(fun (a, b) -> b - a + 1)
+  |> sum ~f:(fun (start, end_) -> end_ - start + 1)
   |> print_int
 ;;
 
