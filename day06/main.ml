@@ -36,7 +36,6 @@ let part2 (rows, (ops, nums)) =
 ;;
 
 let parse2 =
-  let open Angstrom in
   let row = many1 Char.(satisfy is_digit <|> char ' ' >>| to_string >>| String.strip) in
   let ops = both op (many (char ' ') >>| List.length >>| ( + ) 1) in
   both (many_lines_of ~trim:false row) (many ops >>| List.unzip)
