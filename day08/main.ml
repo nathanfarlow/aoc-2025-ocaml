@@ -70,7 +70,27 @@ let part1 coords =
   ()
 ;;
 
-let part2 _ = failwith ""
+let part2 coords =
+  let all_pairs = all_pairs coords |> Sequence.to_list in
+  let adj = Hashtbl.create (module Point3) in
+  let rec loop () =
+    let a, b =
+      all_pairs
+      |> List.filter ~f:(fun (a, b) -> not (Adj.is_connected adj a b))
+      |> min_exn ~compare:(Comparable.lift Int.compare ~f:Point3.distance)
+    in
+    print_s [%message "connecting" (a : Point3.t) (b : Point3.t)];
+    Adj.join adj a b;
+    let group_size = Adj.group adj a |> List.length in
+    print_s [%message (group_size : int)];
+    if group_size = List.length coords
+    then (
+      let (ax, _, _), (bx, _, _) = a, b in
+      print_int (ax * bx))
+    else loop ()
+  in
+  loop ()
+;;
 
 let parse =
   let open Angstrom in
