@@ -7,7 +7,7 @@ module Point3 = struct
   let distance ((a, b, c), (x, y, z)) = sum [ x - a; y - b; z - c ] ~f:(fun x -> x * x)
 end
 
-module Adj = struct
+module Graph = struct
   let create () = Hashtbl.create (module Point3)
 
   let all_in_group t a =
@@ -36,15 +36,15 @@ end
 
 let connect coords ~until =
   let all_pairs = all_pairs coords |> Sequence.to_list in
-  let adj = Adj.create () in
+  let adj = Graph.create () in
   let rec loop () =
     let a, b =
       all_pairs
-      |> List.filter ~f:(Adj.is_directly_connected adj >> not)
+      |> List.filter ~f:(Graph.is_directly_connected adj >> not)
       |> List.min_elt ~compare:(Comparable.lift Int.compare ~f:Point3.distance)
       |> Option.value_exn
     in
-    Adj.connect adj a b;
+    Graph.connect adj a b;
     if until adj (a, b) then a, b else loop ()
   in
   adj, loop ()
@@ -57,7 +57,7 @@ let part1 coords =
       incr count;
       !count = 1000)
   in
-  List.map coords ~f:(Adj.all_in_group adj)
+  List.map coords ~f:(Graph.all_in_group adj)
   |> List.dedup_and_sort ~compare:[%compare: Point3.t list]
   |> List.map ~f:List.length
   |> List.sort ~compare:(Comparable.reverse Int.compare)
@@ -69,7 +69,7 @@ let part1 coords =
 let part2 coords =
   let _, ((ax, _, _), (bx, _, _)) =
     connect coords ~until:(fun adj (a, _) ->
-      Adj.all_in_group adj a |> List.length = List.length coords)
+      Graph.all_in_group adj a |> List.length = List.length coords)
   in
   print_int (ax * bx)
 ;;
