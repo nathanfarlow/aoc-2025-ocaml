@@ -7,83 +7,71 @@ module Point3 = struct
   let distance ((a, b, c), (x, y, z)) = sum [ x - a; y - b; z - c ] ~f:(fun x -> x * x)
 end
 
-let min_exn ~compare l = List.min_elt l ~compare |> Option.value_exn
-
 module Adj = struct
-  (* type t = (Point3.t, Point3.t list) Hashtbl.t *)
+  let create () = Hashtbl.create (module Point3)
 
-  let group t a =
-    let seen = Hash_set.create (module Point3) in
-    let rec aux coord =
-      if Hash_set.mem seen coord
-      then ()
-      else (
-        Hash_set.add seen coord;
-        match Hashtbl.find t coord with
-        | None -> ()
-        | Some neighbors -> List.iter neighbors ~f:aux)
+  let all_in_group t a =
+    let visited = Hash_set.create (module Point3) in
+    let rec dfs coord =
+      if not (Hash_set.mem visited coord)
+      then (
+        Hash_set.add visited coord;
+        Hashtbl.find t coord |> Option.iter ~f:(List.iter ~f:dfs))
     in
-    aux a;
-    Hash_set.to_list seen |> List.sort ~compare:Point3.compare
+    dfs a;
+    Hash_set.to_list visited |> List.sort ~compare:Point3.compare
   ;;
 
-  let join t a b =
+  let connect t a b =
     Hashtbl.add_multi t ~key:a ~data:b;
     Hashtbl.add_multi t ~key:b ~data:a
   ;;
 
-  let is_connected t a b =
+  let is_directly_connected t (a, b) =
     match Hashtbl.find t a with
     | None -> false
     | Some b' -> List.mem ~equal:Point3.equal b' b
   ;;
 end
 
-let part1 coords =
+let connect coords ~until =
   let all_pairs = all_pairs coords |> Sequence.to_list in
-  let adj = Hashtbl.create (module Point3) in
-  (* TODO: change me *)
-  for _ = 1 to 10 do
-    let a, b =
-      all_pairs
-      |> List.filter ~f:(fun (a, b) -> not (Adj.is_connected adj a b))
-      |> min_exn ~compare:(Comparable.lift Int.compare ~f:Point3.distance)
-    in
-    print_s [%message "connecting" (a : Point3.t) (b : Point3.t)];
-    Adj.join adj a b
-  done;
-  let groups =
-    List.map coords ~f:(fun coord -> Adj.group adj coord)
-    |> List.dedup_and_sort ~compare:[%compare: Point3.t list]
-    |> List.map ~f:List.length
-    |> List.sort ~compare:(Comparable.reverse Int.compare)
-    |> (fun l -> List.take l 3)
-    |> List.reduce_exn ~f:( * )
-  in
-  print_int groups;
-  ()
-;;
-
-let part2 coords =
-  let all_pairs = all_pairs coords |> Sequence.to_list in
-  let adj = Hashtbl.create (module Point3) in
+  let adj = Adj.create () in
   let rec loop () =
     let a, b =
       all_pairs
-      |> List.filter ~f:(fun (a, b) -> not (Adj.is_connected adj a b))
-      |> min_exn ~compare:(Comparable.lift Int.compare ~f:Point3.distance)
+      |> List.filter ~f:(Adj.is_directly_connected adj >> not)
+      |> List.min_elt ~compare:(Comparable.lift Int.compare ~f:Point3.distance)
+      |> Option.value_exn
     in
-    print_s [%message "connecting" (a : Point3.t) (b : Point3.t)];
-    Adj.join adj a b;
-    let group_size = Adj.group adj a |> List.length in
-    print_s [%message (group_size : int)];
-    if group_size = List.length coords
-    then (
-      let (ax, _, _), (bx, _, _) = a, b in
-      print_int (ax * bx))
-    else loop ()
+    Adj.connect adj a b;
+    if until adj (a, b) then a, b else loop ()
   in
-  loop ()
+  adj, loop ()
+;;
+
+let part1 coords =
+  let count = ref 0 in
+  let adj, _ =
+    connect coords ~until:(fun _ _ ->
+      incr count;
+      !count = 1000)
+  in
+  List.map coords ~f:(Adj.all_in_group adj)
+  |> List.dedup_and_sort ~compare:[%compare: Point3.t list]
+  |> List.map ~f:List.length
+  |> List.sort ~compare:(Comparable.reverse Int.compare)
+  |> (fun l -> List.take l 3)
+  |> List.reduce_exn ~f:( * )
+  |> print_int
+;;
+
+let part2 coords =
+  let _, ((ax, _, _), (bx, _, _)) =
+    connect coords ~until:(fun adj (a, _) ->
+      Adj.all_in_group adj a |> List.length = List.length coords)
+  in
+  print_int (ax * bx)
 ;;
 
 let parse =
