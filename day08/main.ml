@@ -1,20 +1,13 @@
 open! Core
 open! Common
 
-let sq x = x * x
-
 module Point3 = struct
   type t = int * int * int [@@deriving compare, hash, equal, sexp_of]
 
-  let distance ((a, b, c), (x, y, z)) = sq (x - a) + sq (y - b) + sq (z - c)
+  let distance ((a, b, c), (x, y, z)) = sum [ x - a; y - b; z - c ] ~f:(fun x -> x * x)
 end
 
-let min_exn ~compare l =
-  List.zip_exn l (List.range 0 (List.length l))
-  |> List.min_elt ~compare:(Tuple2.compare ~cmp1:compare ~cmp2:Int.compare)
-  |> Option.value_exn
-  |> fst
-;;
+let min_exn ~compare l = List.min_elt l ~compare |> Option.value_exn
 
 module Adj = struct
   (* type t = (Point3.t, Point3.t list) Hashtbl.t *)
@@ -49,7 +42,8 @@ end
 let part1 coords =
   let all_pairs = all_pairs coords |> Sequence.to_list in
   let adj = Hashtbl.create (module Point3) in
-  for _ = 1 to 1000 do
+  (* TODO: change me *)
+  for _ = 1 to 10 do
     let a, b =
       all_pairs
       |> List.filter ~f:(fun (a, b) -> not (Adj.is_connected adj a b))
