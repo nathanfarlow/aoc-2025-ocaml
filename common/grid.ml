@@ -3,6 +3,7 @@ open! Core
 type 'a t = 'a array array [@@deriving sexp_of]
 
 let create xs = List.map xs ~f:Array.of_list |> Array.of_list
+let init ~h ~w ~f = Array.init h ~f:(fun i -> Array.init w ~f:(fun j -> f (i, j)))
 let height = Array.length
 let width t = Array.length t.(0)
 let get t (i, j) = t.(i).(j)
@@ -11,22 +12,14 @@ let get_opt t (i, j) = if in_bounds t (i, j) then Some t.(i).(j) else None
 let set t (i, j) v = t.(i).(j) <- v
 let set_opt t (i, j) v = if in_bounds t (i, j) then t.(i).(j) <- v
 
-let neighbors4 grid (i, j) =
-  [ i - 1, j; i + 1, j; i, j - 1; i, j + 1 ]
+let neighbors4 grid point =
+  Point.neighbors4 point
   |> List.filter_map ~f:(fun pos ->
     get_opt grid pos |> Option.map ~f:(fun val_ -> pos, val_))
 ;;
 
-let neighbors8 grid (i, j) =
-  [ i - 1, j - 1
-  ; i - 1, j
-  ; i - 1, j + 1
-  ; i, j - 1
-  ; i, j + 1
-  ; i + 1, j - 1
-  ; i + 1, j
-  ; i + 1, j + 1
-  ]
+let neighbors8 grid point =
+  Point.neighbors8 point
   |> List.filter_map ~f:(fun pos ->
     get_opt grid pos |> Option.map ~f:(fun val_ -> pos, val_))
 ;;

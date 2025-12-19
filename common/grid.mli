@@ -5,6 +5,7 @@ open! Core
 type 'a t = 'a array array [@@deriving sexp_of]
 
 val create : 'a list list -> 'a t
+val init : h:int -> w:int -> f:(Point.t -> 'a) -> 'a t
 val height : 'a t -> int
 val width : 'a t -> int
 val in_bounds : 'a t -> Point.t -> bool

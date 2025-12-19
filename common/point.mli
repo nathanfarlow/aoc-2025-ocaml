@@ -17,3 +17,5 @@ val up : t
 val down : t
 val left : t
 val right : t
+val neighbors4 : t -> t list
+val neighbors8 : t -> t list
