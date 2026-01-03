@@ -13,7 +13,37 @@ let part1 (data : (string * string list) list) =
   print_int (num "you")
 ;;
 
-let part2 _ = failwith ""
+module Key = struct
+  module T = struct
+    type t =
+      { fft : bool
+      ; dac : bool
+      ; node : string
+      }
+    [@@deriving hash, compare, sexp]
+  end
+
+  include T
+  include Hashable.Make (T)
+end
+
+let part2 (data : (string * string list) list) =
+  let dag = Hashtbl.create (module String) in
+  List.iter data ~f:(fun (node, edges) -> Hashtbl.set dag ~key:node ~data:edges);
+  let num =
+    Memo.recursive ~hashable:Key.hashable (fun num key ->
+      match key.node with
+      | "out" -> if key.fft && key.dac then 1 else 0
+      | _ ->
+        let fft = key.fft || String.equal key.node "fft" in
+        let dac = key.dac || String.equal key.node "dac" in
+        Hashtbl.find dag key.node
+        |> Option.value ~default:[]
+        |> List.map ~f:(fun node -> { Key.fft; dac; node })
+        |> sum ~f:num)
+  in
+  print_int (num { node = "svr"; fft = false; dac = false })
+;;
 
 let parse =
   let open Angstrom in
