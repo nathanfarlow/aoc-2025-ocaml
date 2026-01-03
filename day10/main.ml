@@ -11,7 +11,7 @@ let toggle state button =
   Array.to_list state
 ;;
 
-let fewest_presses (target, _buttons, _joltages) =
+let fewest_presses (target, buttons, _) =
   let seen = Hash_set.create (module M) in
   let queue = Queue.create () in
   Queue.enqueue queue (0, List.init (List.length target) ~f:(fun _ -> false));
@@ -20,7 +20,7 @@ let fewest_presses (target, _buttons, _joltages) =
     if List.equal Bool.equal value target
     then depth
     else (
-      List.iter _buttons ~f:(fun button ->
+      List.iter buttons ~f:(fun button ->
         let toggled = toggle value button in
         if not (Hash_set.mem seen toggled) then Queue.enqueue queue (depth + 1, toggled));
       go ())
@@ -29,7 +29,39 @@ let fewest_presses (target, _buttons, _joltages) =
 ;;
 
 let part1 = sum ~f:fewest_presses >> print_int
-let part2 _ = failwith ""
+
+let one (_, buttons, targets) =
+  let targets = List.map targets ~f:(fun t -> Lp.c (Int.to_float t)) in
+  let vector button =
+    List.init (List.length targets) ~f:(fun i ->
+      if List.mem button i ~equal:Int.equal then Lp.c 1. else Lp.c 0.)
+  in
+  let vectors = List.map buttons ~f:vector in
+  let open Lp in
+  let vars =
+    List.init (List.length buttons) ~f:(fun i ->
+      let s = Int.to_string i in
+      Lp.var ~integer:true ("b" ^ s))
+  in
+  let problem =
+    let obj = minimize (List.reduce_exn vars ~f:( ++ )) in
+    let constraints =
+      List.zip_exn vars vectors
+      |> List.map ~f:(fun (var, vector) -> List.map vector ~f:(( *~ ) var))
+      |> List.transpose_exn
+      |> List.map ~f:(List.reduce_exn ~f:( ++ ))
+      |> List.zip_exn targets
+      |> List.map ~f:(fun (target, value) -> target =~ value)
+    in
+    make obj constraints
+  in
+  Lp_glpk.solve ~term_output:false problem
+  |> function
+  | Ok (obj, _) -> Float.iround_nearest_exn obj
+  | _ -> assert false
+;;
+
+let part2 = sum ~f:one >> print_int
 
 let parse =
   let open Angstrom in
