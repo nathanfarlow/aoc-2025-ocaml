@@ -44,7 +44,22 @@ module Angstrom = struct
     | exception _ -> None
   ;;
 
-  let skip_till p = fix (fun m -> p <|> any_char *> m)
+  let take_till_p p =
+    let aux =
+      fix (fun aux ->
+        let yes_p = p >>| fun p_res -> [], p_res in
+        let no_p =
+          let%bind char = any_char in
+          let%map chars, p_res = aux in
+          char :: chars, p_res
+        in
+        yes_p <|> no_p)
+    in
+    aux >>| Tuple2.map_fst ~f:String.of_list
+  ;;
+
+  let skip_till_p p = take_till_p p >>| snd
+  let take_till_p p = take_till_p p >>| fst
   let digit = satisfy Char.is_digit >>| Char.to_string >>| Int.of_string
 end
 

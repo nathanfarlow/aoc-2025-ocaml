@@ -22,9 +22,8 @@ module Angstrom : sig
   val digit : int t
 
   val integer : int t
-
-  (** Skip all characters until we encounter the given parser. *)
-  val skip_till : 'a t -> 'a t
+  val take_till_p : 'a t -> string t
+  val skip_till_p : 'a t -> 'a t
 
   (** Skips [Char.is_whitespace] *)
   val space_or_line : unit t
